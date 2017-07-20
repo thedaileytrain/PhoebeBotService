@@ -25,20 +25,31 @@ bot.dialog('/', [
         builder.Prompts.confirm(session, "Do you love your pets?");
     },
     function (session, result) {
-        console.log(result);
         if (result.response) {
-            builder.Prompts.confirm(session, "would you like to see how much it would cost to have piece of mind with your loved one?");
+            session.beginDialog('interestedInInsurance');
         }else{
             session.endDialog('Appreciate your responses. Thank you for your time');
         }
+    }
+]);
+
+bot.dialog('interestedInInsurance', [
+    function (session) {
+        builder.Prompts.confirm(session, "would you be interested in the cost insuring your pet?");
     },
     function (session, result) {
         if (result.response) {
-            session.send("We are going to ask a few questions to gather information for your quote.");
-            builder.Prompts.text(session, "What is your zip code?");
+            session.beginDialog("askPetQuestions");
         }else{
             session.endDialog('If you ever consider changing your mind. Please contact us at Nationwide.com');
         }
+    }
+]);
+
+bot.dialog('askPetQuestions', [
+    function (session) {
+        session.send("We are going to ask a few questions to gather information for your quote.");
+        builder.Prompts.text(session, "What is your zip code?");
     },
     function (session, result) {
         session.userData.zipCode = result.response;
@@ -62,27 +73,27 @@ bot.dialog('/', [
     },
     function (session, result) {
         session.userData.phoneNumber = result.response;
-        session.send("Got it... For your " + session.userData.petType + " it will cost you $40 a month.");
+        session.beginDialog('discussQuote');
+    }
+]);
+
+bot.dialog('discussQuote', [
+    function (session) {
+        session.send("Thanks for the information... For your " + session.userData.petType + " it will cost you $40 a month.");
         builder.Prompts.confirm(session, "Would you like us to contact you at " + session.userData.emailAddress + " about this quote?");
-    },
-    function (session, result) {
+    }, function (session, result) {
         if(result.response){
-          session.endDialog('You should be contacted about your quote soon. Thank you for your time');
+            session.beginDialog('confirmInsurance');
         }else{
-          session.endDialog('If you ever consider changing your mind or would like to revist your quote. Please contact us at Nationwide.com');  
+            session.endDialog('If you ever consider changing your mind or would like to revist your quote. Please contact us at Nationwide.com');
         }
     }
-    // ,
-    // function (session, results) {
-    //     session.userData.coding = results.response;
-    //     builder.Prompts.choice(session, "What language do you code Node using?", ["JavaScript", "CoffeeScript", "TypeScript"]);
-    // },
-    // function (session, results) {
-    //     session.userData.language = results.response.entity;
-    //     session.send("Got it... " + session.userData.name + 
-    //                 " you've been programming for " + session.userData.coding + 
-    //                 " years and use " + session.userData.language + ".");
-    // }
+]);
+
+bot.dialog('confirmInsurance', [
+    function (session) {
+        session.endDialog('follow the stuff.');
+    }
 ]);
 
 if (useEmulator) {
