@@ -22,18 +22,18 @@ bot.localePath(path.join(__dirname, './locale'));
 
 bot.dialog('/', [
     function (session) {
-        builder.Prompts.text(session, "Do you love your pets?");
+        builder.Prompts.confirm(session, "Do you love your pets?");
     },
     function (session, result) {
         console.log(result);
-        if(result.response == 'yes'){
-            builder.Prompts.text(session, "would you like to see how much it would cost to have piece of mind with your loved one?");
+        if (result.response) {
+            builder.Prompts.confirm(session, "would you like to see how much it would cost to have piece of mind with your loved one?");
         }else{
             session.endDialog('Appreciate your responses. Thank you for your time');
         }
     },
     function (session, result) {
-        if(result.response == 'yes'){
+        if (result.response) {
             session.send("We are going to ask a few questions to gather information for your quote.");
             builder.Prompts.text(session, "What is your zip code?");
         }else{
@@ -62,9 +62,8 @@ bot.dialog('/', [
     },
     function (session, result) {
         session.userData.phoneNumber = result.response;
-        session.send("Got it... For your " + session.userData.petType + 
-                    " it will cost you $40 a month.");
-        builder.Prompts.text(session, "Would you like us to contact you at " +  session.userData.emailAddress + " about this quote?");
+        session.send("Got it... For your " + session.userData.petType + " it will cost you $40 a month.");
+        builder.Prompts.confirm(session, "Would you like us to contact you at " + session.userData.emailAddress + " about this quote?");
     },
     function (session, result) {
         if(result.response){
