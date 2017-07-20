@@ -25,6 +25,7 @@ bot.dialog('/', [
         builder.Prompts.text(session, "Do you love your pets?");
     },
     function (session, result) {
+        console.log(result);
         if(result.response == 'yes'){
             builder.Prompts.text(session, "would you like to see how much it would cost to have piece of mind with your loved one?");
         }else{
