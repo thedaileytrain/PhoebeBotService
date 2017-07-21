@@ -20,23 +20,6 @@ var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure
 var bot = new builder.UniversalBot(connector);
 bot.localePath(path.join(__dirname, './locale'));
 
-
-// Add first run dialog
-bot.dialog('firstRun', function (session) {
-    session.userData.firstRun = true;
-    session.send("Hello...").endDialog();
-}).triggerAction({
-    onFindAction: function (context, callback) {
-        // Only trigger if we've never seen user before
-        if (!context.userData.firstRun) {
-            // Return a score of 1.1 to ensure the first run dialog wins
-            callback(null, 1.1);
-        } else {
-            callback(null, 0.0);
-        }
-    }
-});
-
 bot.dialog('/', [
     function (session) {
         session.send("Nationwide offers pet insurance. Answering a few simple questions can help give you peace of mind when it comes to your pet’s care.");
@@ -99,28 +82,24 @@ bot.dialog('discussQuote', [
     function (session) {
         session.send("Thanks for the information...  we calculating your quote. This may take up to a minute.");
         var requestBody = {
-            'PetQuoteCartRequest': {
-                'leadFirstName': session.userData.firstName,
-                'leadLastName': session.userData.lastName,
-                'leadEmail': session.userData.emailAddress,
-                'leadZipCode': session.userData.zipCode,
-                'originCode': '122355',
-                'leadPhone': session.userData.phoneNumber,
-                'apiKey': '29900',
-                'quotes': [{
-                    'PetQuoteRequest': {
-                        'PetQuoteRequestData': {
-                            'petName': session.userData.petName,
-                            'PetSpecies': session.userData.petType,
-                            'petBreedId': session.userData.petBreed,
-                            'petDateOfBirth': session.userData.petBirthDate,
-                            'ProductCode': 'POIA25090',
-                            'gender': session.userData.petGender,
-                            'petColorId': session.userData.petColor
-                        }
-                    }
-                }]
-            }
+            "leadFirstName": session.userData.firstName,
+            "leadLastName": session.userData.lastName,
+            "leadEmail": session.userData.emailAddress,
+            "leadZipCode": session.userData.zipCode,
+            "originCode": "122355",
+            "leadPhone": session.userData.phoneNumber,
+            "apiKey": "29900",
+            "quotes": [{
+                "petQuoteRequest": {
+                    "petName": session.userData.petName,
+                    "PetSpecies": session.userData.petType,
+                    "petBreedId": session.userData.petBreed,
+                    "petDateOfBirth": session.userData.petBirthDate,
+                    "ProductCode": "POIA25090",
+                    "gender": session.userData.petGender,
+                    "petColorId": session.userData.petColor
+                }
+            }]
         };
 
         request.post('http://phoebeweb.azurewebsites.net/petQuoteController/quotecarts', requestBody).on('data', function (data) {
