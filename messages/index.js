@@ -126,7 +126,7 @@ bot.dialog('discussQuote', [
 
 bot.dialog('confirmInsurance', [
     function (session) {
-        session.endDialog('Continue to http://google.com to bind coverage.');
+        session.endDialog('Continue to ' + session.userData.bindURL + ' to bind coverage.');
     }
 ]);
 
