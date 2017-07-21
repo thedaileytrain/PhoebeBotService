@@ -106,17 +106,21 @@ bot.dialog('discussQuote', [
         try {
             var requestOptions = {
                 url: 'http://phoebeweb.azurewebsites.net/petQuoteController/quotecarts',
+                method: 'POST',
+                json: requestBody,
                 headers: {
-                    'Content-Type': 'application/json',
                     'Accept': 'application/json'
                   }
             };
-            request.post(requestOptions, requestBody).on('data', function (data) {
-                session.send(data);
+            request.post(requestOptions, function (err, response, body) {
+                session.send(err);
+                session.send(response);
+                session.send(body);
                 session.send("To insure " + session.userData.petName + " it will cost " + data + ".");
                 builder.Prompts.confirm(session, "Would you like to continue on to see your coverage and finalize your quote?");
             });
         } catch (e) {
+            session.send('shit be broke');
             session.send(e);
             console.log(e);
         }
