@@ -7,6 +7,7 @@ https://aka.ms/abs-node-waterfall
 var builder = require("botbuilder");
 var botbuilder_azure = require("botbuilder-azure");
 var path = require('path');
+var request = require('request');
 
 var useEmulator = (process.env.NODE_ENV == 'development');
 
@@ -103,15 +104,22 @@ bot.dialog('discussQuote', [
         };
 
         try {
-        request.post('http://phoebeweb.azurewebsites.net/petQuoteController/quotecarts', requestBody).on('data', function (data) {
-            session.send(data);
-            session.send("To insure " + session.userData.petName + " it will cost " + data + ".");
-            builder.Prompts.confirm(session, "Would you like to continue on to see your coverage and finalize your quote?");
-        });
-    } catch {e}
-        session.send(e);
-        console.log(e);
-    }
+            var requestOptions = {
+                url: 'http://phoebeweb.azurewebsites.net/petQuoteController/quotecarts',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                  }
+            };
+            request.post(requestOptions, requestBody).on('data', function (data) {
+                session.send(data);
+                session.send("To insure " + session.userData.petName + " it will cost " + data + ".");
+                builder.Prompts.confirm(session, "Would you like to continue on to see your coverage and finalize your quote?");
+            });
+        } catch (e) {
+            session.send(e);
+            console.log(e);
+        }
     }, function (session, result) {
         if(result.response){
             session.beginDialog('confirmInsurance');
