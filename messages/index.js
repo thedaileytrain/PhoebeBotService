@@ -10,6 +10,10 @@ var path = require('path');
 var request = require('request');
 
 var useEmulator = (process.env.NODE_ENV == 'development');
+// useEmulator = true;
+if (useEmulator) {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+}
 
 var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure.BotServiceConnector({
     appId: process.env['MicrosoftAppId'],
@@ -35,15 +39,15 @@ bot.dialog('askPetQuestions', [
     },
     function (session, result) {
         session.userData.petName = result.response;
-        builder.Prompts.choice(session, "Is " + session.userData.petName + " a dog or cat?", ["Dog", "Cat"], 'button');
+        builder.Prompts.choice(session, "Is " + session.userData.petName + " a dog or cat?", ["Dog", "Cat"]);
     },
     function (session, result) {
         session.userData.petType = result.response.entity;
-        builder.Prompts.text(session, "Is " + session.userData.petName + " a male or female?");
+        builder.Prompts.choice(session, "Is " + session.userData.petName + " a male or female?", ['Male', 'Female']);
     },
     function (session, result) {
-        session.userData.petGender = result.response;
-        builder.Prompts.text(session, "When was " + session.userData.petName + " born? (YYYY/MM/DD)");
+        session.userData.petGender = result.response.entity;
+        builder.Prompts.text(session, "When was " + session.userData.petName + " born? (YYYY-MM-DD)");
     },
     function (session, result) {
         session.userData.petBirthDate = result.response;
@@ -81,61 +85,55 @@ bot.dialog('askPetQuestions', [
 
 bot.dialog('discussQuote', [
     function (session) {
-        session.send("Thanks for the information...  we calculating your quote. This may take up to a minute.");
+        session.send("Thanks for the information...  we're calculating your quote. This may take up to a minute.");
         var requestBody = {
             "leadFirstName": session.userData.firstName,
             "leadLastName": session.userData.lastName,
             "leadEmail": session.userData.emailAddress,
-            "leadZipCode": session.userData.zipCode,
+            "leadZipcode": session.userData.zipCode,
             "originCode": "122355",
             "leadPhone": session.userData.phoneNumber,
             "apiKey": "29900",
             "quotes": [{
                 "petQuoteRequest": {
                     "petName": session.userData.petName,
-                    "PetSpecies": session.userData.petType,
+                    "petSpecies": session.userData.petType,
                     "petBreedId": session.userData.petBreed,
                     "petDateOfBirth": session.userData.petBirthDate,
-                    "ProductCode": "POIA25090",
+                    "productCode": "POIA25090",
                     "gender": session.userData.petGender,
                     "petColorId": session.userData.petColor
                 }
             }]
         };
 
-        try {
-            var requestOptions = {
-                url: 'http://phoebeweb.azurewebsites.net/petQuoteController/quotecarts',
-                method: 'POST',
-                json: requestBody,
-                headers: {
-                    'Accept': 'application/json'
-                  }
-            };
-            request.post(requestOptions, function (err, response, body) {
-                session.send(err);
-                session.send(response);
-                session.send(body);
-                session.send("To insure " + session.userData.petName + " it will cost " + ".");
-                builder.Prompts.confirm(session, "Would you like to continue on to see your coverage and finalize your quote?");
-            });
-        } catch (e) {
-            session.send('shit be broke');
-            session.send(e);
-            console.log(e);
-        }
+        var requestOptions = {
+            url: useEmulator ? 'https://localhost:8443/petQuote/quotecarts' : 'http://phoebeweb.azurewebsites.net/petQuote/quotecarts',
+            method: 'POST',
+            json: requestBody,
+            headers: {
+                'Accept': 'application/json'
+              }
+        };
+        request.post(requestOptions, function (err, response, body) {
+            console.log(body.data);
+            console.log(body.data.quotes);
+            session.send("To insure " + session.userData.petName + " it would cost " + body.data.quotes[0].monthlyAmount + " a month.");
+            session.userData.bindURL = body.data.bindURL;
+            builder.Prompts.confirm(session, "Would you like to continue on to see your coverage and finalize your quote?");
+        });
     }, function (session, result) {
         if(result.response){
             session.beginDialog('confirmInsurance');
         }else{
-            session.endDialog('Please contact us at Nationwide.com for any further questions, Thank you.');
+            session.endDialog('Please contact us at Nationwide.com for any further questions, thank you.');
         }
     }
 ]);
 
 bot.dialog('confirmInsurance', [
     function (session) {
-        session.endDialog('follow the stuff.');
+        session.endDialog('Continue to http://google.com to bind coverage.');
     }
 ]);
 
