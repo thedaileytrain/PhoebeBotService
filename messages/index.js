@@ -20,12 +20,23 @@ var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure
 var bot = new builder.UniversalBot(connector);
 bot.localePath(path.join(__dirname, './locale'));
 
-bot.dialog('/', [
-    function (session) {
-        session.send("Nationwide offers pet insurance. Answering a few simple questions can help give you peace of mind when it comes to your pet’s care.");
-        session.beginDialog('askPetQuestions');
-    }
-]).trigger(bot);
+function sendProactiveMessage(session) {
+    session.send("Nationwide offers pet insurance. Answering a few simple questions can help give you peace of mind when it comes to your pet’s care.");
+    session.beginDialog('askPetQuestions');
+}
+// bot.dialog('/',
+//     function (session) {
+//         session.send("Nationwide offers pet insurance. Answering a few simple questions can help give you peace of mind when it comes to your pet’s care.");
+//         session.beginDialog('askPetQuestions');
+//     }
+// );
+
+// bot.dialog('startQuote', [
+//     function (session) {
+//         session.send("Nationwide offers pet insurance. Answering a few simple questions can help give you peace of mind when it comes to your pet’s care.");
+//         session.beginDialog('askPetQuestions');
+//     }
+// ]);
 
 bot.dialog('askPetQuestions', [
     function (session) {
@@ -106,29 +117,8 @@ bot.dialog('discussQuote', [
             }
         };
 
-        // var chicken = {
-        //     'leadFirstName': 'Tom',
-        //         'leadLastName': 'Dailey',
-        //         'leadEmail': 'dailet1@nationwide.com',
-        //         'leadZipCode': '50625',
-        //         'originCode': '122355',
-        //         'leadPhone': '6412200457',
-        //         'apiKey': '29900',
-        //         'quotes': [{
-        //             'petQuoteRequest': {
-        //                 'petName': 'Karl',
-        //                 'PetSpecies': 'Dog',
-        //                 'petBreedId': 'A',
-        //                 'petDateOfBirth': '2015-01-15',
-        //                 'ProductCode': 'POIA25090',
-        //                 'gender': 'male',
-        //                 'petColorId': 'yellow'
-        //             }
-        //     }]
-        // }
-
         request.post('http://phoebeweb.azurewebsites.net/petQuoteController/quotecarts', requestBody).on('data', function (data) {
-            session.send(data)
+            session.send(data);
             session.send("To insure " + session.userData.petName + " it will cost " + data + ".");
             builder.Prompts.confirm(session, "Would you like to continue on to see your coverage and finalize your quote?");
         });
