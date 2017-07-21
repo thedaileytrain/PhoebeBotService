@@ -34,7 +34,7 @@ bot.dialog('/', [
 
 bot.dialog('askPetQuestions', [
     function (session) {
-        session.send("We are going to ask a few questions to gather information for your quote. Let's start with your pet.");
+        session.send("We are going to ask a few questions. Let's start with your pet.");
         builder.Prompts.text(session, "What is your pets name?");
     },
     function (session, result) {
