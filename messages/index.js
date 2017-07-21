@@ -102,11 +102,16 @@ bot.dialog('discussQuote', [
             }]
         };
 
+        try {
         request.post('http://phoebeweb.azurewebsites.net/petQuoteController/quotecarts', requestBody).on('data', function (data) {
             session.send(data);
             session.send("To insure " + session.userData.petName + " it will cost " + data + ".");
             builder.Prompts.confirm(session, "Would you like to continue on to see your coverage and finalize your quote?");
         });
+    } catch {e}
+        session.send(e);
+        console.log(e);
+    }
     }, function (session, result) {
         if(result.response){
             session.beginDialog('confirmInsurance');
@@ -128,7 +133,7 @@ if (useEmulator) {
     server.listen(3978, function() {
         console.log('test bot endpont at http://localhost:3978/api/messages');
     });
-    server.post('/api/messages', connector.listen());    
+    server.post('/api/messages', connector.listen());
 } else {
     module.exports = { default: connector.listen() }
 }
