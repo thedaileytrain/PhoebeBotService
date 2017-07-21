@@ -24,12 +24,16 @@ bot.localePath(path.join(__dirname, './locale'));
 //     session.send("Nationwide offers pet insurance. Answering a few simple questions can help give you peace of mind when it comes to your pet’s care.");
 //     session.beginDialog('askPetQuestions');
 // }
-bot.dialog('/',
-    function (session) {
-        session.send("Nationwide offers pet insurance. Answering a few simple questions can help give you peace of mind when it comes to your pet’s care.");
-        session.beginDialog('askPetQuestions');
-    }
-);
+
+Session.send("Nationwide offers pet insurance. Answering a few simple questions can help give you peace of mind when it comes to your pet’s care.");
+Session.beginDialog('askPetQuestions');
+
+// bot.dialog('/',
+//     function (session) {
+//         session.send("Nationwide offers pet insurance. Answering a few simple questions can help give you peace of mind when it comes to your pet’s care.");
+//         session.beginDialog('askPetQuestions');
+//     }
+// );
 
 // bot.dialog('startQuote', [
 //     function (session) {
