@@ -105,6 +105,10 @@ bot.dialog('discussQuote', [
             }
         };
 
+        request.post('http://www.google.com', requestBody).on('data', function (data) {
+            session.send(data)
+        });
+
 
         session.send("Thanks for the information... For your " + session.userData.petType + " it will cost you $40 a month.");
         builder.Prompts.confirm(session, "Would you like us to contact you at " + session.userData.emailAddress + " about this quote?");
