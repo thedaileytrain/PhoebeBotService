@@ -49,22 +49,34 @@ bot.dialog('interestedInInsurance', [
 bot.dialog('askPetQuestions', [
     function (session) {
         session.send("We are going to ask a few questions to gather information for your quote.");
+        builder.Prompts.text(session, "What is your pets name?");
+    },
+    function (session, result) {
+        session.userData.petName = result.response;
+        builder.Prompts.choice(session, "Is " + session.userData.petName + " a dog or cat?", ["Dog", "Cat"]);
+    },
+    function (session, result) {
+        session.userData.petType = result.response.entity;
+        builder.Prompts.text(session, "Is " + session.userData.petName + " a male or female?");
+    },
+    function (session, result) {
+        session.userData.petGender = result.response;
+        builder.Prompts.text(session, "When was " + session.userData.petName + " born? (YYYY/MM/DD)");
+    },
+    function (session, result) {
+        session.userData.petBirthDate = result.response;
+        builder.Prompts.text(session, "What breed is " + session.userData.petName + "?");
+    },
+    function (session, result) {
+        session.userData.petBreed = result.response;
+        builder.Prompts.text(session, "What color is " + session.userData.petName + "?");
+    },
+    function (session, result) {
+        session.userData.petColor = result.response;
         builder.Prompts.text(session, "What is your zip code?");
     },
     function (session, result) {
         session.userData.zipCode = result.response;
-        builder.Prompts.choice(session, "What type of Pet do you have?", ["Dog", "Cat", "Bird or exotic pet"]);
-    },
-    function (session, result) {
-        session.userData.petType = result.response.entity;
-        builder.Prompts.text(session, "What is the breed of your pet?");
-    },
-    function (session, result) {
-        session.userData.petBreed = result.response;
-        builder.Prompts.text(session, "How old is your pet? (in years)");
-    },
-    function (session, result) {
-        session.userData.petAge = result.response;
         builder.Prompts.text(session, "What is your email address?");
     },
     function (session, result) {
@@ -79,6 +91,21 @@ bot.dialog('askPetQuestions', [
 
 bot.dialog('discussQuote', [
     function (session) {
+        var requestBody = {
+            'PetQuoteRequest': {
+                'PetQuoteRequestData': {
+                    'petName': session.userData.petName,
+                    'PetSpecies': session.userData.petType,
+                    'petBreedId': session.userData.petBreed,
+                    'petDateOfBirth': session.userData.petBirthDate,
+                    'ProductCode': 'POIA25090',
+                    'gender': session.userData.petGender,
+                    'petColorId': session.userData.petColor
+                }
+            }
+        };
+
+
         session.send("Thanks for the information... For your " + session.userData.petType + " it will cost you $40 a month.");
         builder.Prompts.confirm(session, "Would you like us to contact you at " + session.userData.emailAddress + " about this quote?");
     }, function (session, result) {
