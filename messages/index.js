@@ -19,17 +19,17 @@ var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure
 
 var bot = new builder.UniversalBot(connector);
 bot.localePath(path.join(__dirname, './locale'));
-
-function sendProactiveMessage(session) {
-    session.send("Nationwide offers pet insurance. Answering a few simple questions can help give you peace of mind when it comes to your pet’s care.");
-    session.beginDialog('askPetQuestions');
-}
-// bot.dialog('/',
-//     function (session) {
-//         session.send("Nationwide offers pet insurance. Answering a few simple questions can help give you peace of mind when it comes to your pet’s care.");
-//         session.beginDialog('askPetQuestions');
-//     }
-// );
+//
+// function sendProactiveMessage(session) {
+//     session.send("Nationwide offers pet insurance. Answering a few simple questions can help give you peace of mind when it comes to your pet’s care.");
+//     session.beginDialog('askPetQuestions');
+// }
+bot.dialog('/',
+    function (session) {
+        session.send("Nationwide offers pet insurance. Answering a few simple questions can help give you peace of mind when it comes to your pet’s care.");
+        session.beginDialog('askPetQuestions');
+    }
+);
 
 // bot.dialog('startQuote', [
 //     function (session) {
