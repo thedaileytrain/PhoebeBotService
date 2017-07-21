@@ -35,6 +35,7 @@ bot.dialog('/', [
 bot.dialog('askPetQuestions', [
     function (session) {
         session.send("We are going to ask a few questions to gather information for your quote.");
+        session.send("Let's start with your pet.");
         builder.Prompts.text(session, "What is your pets name?");
     },
     function (session, result) {
@@ -43,10 +44,6 @@ bot.dialog('askPetQuestions', [
     },
     function (session, result) {
         session.userData.petType = result.response.entity;
-        builder.Prompts.choice(session, "Is " + session.userData.petName + " a male or female?", ['Male', 'Female']);
-    },
-    function (session, result) {
-        session.userData.petGender = result.response.entity;
         builder.Prompts.text(session, "When was " + session.userData.petName + " born? (YYYY-MM-DD)");
     },
     function (session, result) {
@@ -55,15 +52,12 @@ bot.dialog('askPetQuestions', [
     },
     function (session, result) {
         session.userData.petBreed = result.response;
-        builder.Prompts.text(session, "What color is " + session.userData.petName + "?");
-    },
-    function (session, result) {
-        session.userData.petColor = result.response;
+        session.send("Thanks for the information on " + session.userData.petName + ". Now we have a couple questions about you.");
         builder.Prompts.text(session, "What is your first name?");
     },
     function (session, result) {
         session.userData.firstName = result.response;
-        builder.Prompts.text(session, "What is your last name?");
+        builder.Prompts.text(session, "Thanks, " + session.userData.firstName + ", what is your last name?");
     },
     function (session, result) {
         session.userData.lastName = result.response;
@@ -71,7 +65,7 @@ bot.dialog('askPetQuestions', [
     },
     function (session, result) {
         session.userData.zipCode = result.response;
-        builder.Prompts.text(session, "What is your email address?");
+        builder.Prompts.text(session, "Please provide your email address?");
     },
     function (session, result) {
         session.userData.emailAddress = result.response;
@@ -101,8 +95,8 @@ bot.dialog('discussQuote', [
                     "petBreedId": session.userData.petBreed,
                     "petDateOfBirth": session.userData.petBirthDate,
                     "productCode": "POIA25090",
-                    "gender": session.userData.petGender,
-                    "petColorId": session.userData.petColor
+                    "gender": "Male",
+                    "petColorId": "tan"
                 }
             }]
         };
