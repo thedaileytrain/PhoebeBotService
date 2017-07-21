@@ -116,7 +116,7 @@ bot.dialog('discussQuote', [
                 session.send(err);
                 session.send(response);
                 session.send(body);
-                session.send("To insure " + session.userData.petName + " it will cost " + data + ".");
+                session.send("To insure " + session.userData.petName + " it will cost " + ".");
                 builder.Prompts.confirm(session, "Would you like to continue on to see your coverage and finalize your quote?");
             });
         } catch (e) {
